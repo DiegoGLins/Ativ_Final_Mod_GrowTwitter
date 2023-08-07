@@ -1,22 +1,25 @@
 
 import { tweets } from "../database/tweets";
 import { users } from "../database/users";
+import { Reply } from "../models/ReplyModel";
 import Tweet from "../models/TweetModel";
-
-
-
-class TweetRepository {
+import { User } from "../models/UserModel";
+import { v4 as createUuid } from 'uuid'
+export class TweetRepository {
   public addTweet(tipo: Tweet) {
     tweets.push(tipo);
   }
 
-  public list(params: Tweet) {
-    return tweets.filter(item => item.author.id === params.getId());
+  public list(params: User) {
+
+    const findUser = users.find(item => item.id === params.id)
+
+    if (findUser) {
+      const listTweets = findUser!.tweets.map(item => {item.content})
+      return listTweets
+    }
   }
 
-  public addReply(tweet: Tweet) {
-    users.find(item => item.detailFollow().tweets.push(tweet))
-  }
 
   public getId(id: string) {
     return tweets.find((tweet) => tweet.getId() === id)
@@ -32,4 +35,4 @@ class TweetRepository {
 
 }
 
-export default new TweetRepository;
+export default new TweetRepository()
