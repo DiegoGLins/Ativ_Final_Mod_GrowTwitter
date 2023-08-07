@@ -24,7 +24,6 @@ class TweetController {
 
   public feedTweet(tweet: string, user: Follow) {
 
-    // const findUser = users!.find(item => item.id === user.id)
 
     const findTweet = tweets.find(item => item.content === tweet)
     const findReply = replies.find(item => item.authorReply.id === user.id)
