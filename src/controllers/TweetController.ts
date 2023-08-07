@@ -1,91 +1,102 @@
 
-import { Follow } from "../Types/FollowUserType";
-import { TweetType } from "../Types/TweetType";
-import { tweets } from "../database/tweets";
 import Tweet from "../models/TweetModel";
-import { User } from "../models/UserModel";
+import { users } from "../database/users";
 import TweetRepository from "../repositories/Tweet.repository";
+import { User } from "../models/UserModel";
+import { tweets } from "../database/tweets";
+import { replies } from "../database/replies";
+import { Follow } from "../Types/FollowUserType";
+import { Reply } from "../models/ReplyModel";
 
-export class TweetController {
-  public create(tweet: Tweet, TweetReplyTo?: Tweet) {
-    let newTweet = new Tweet(tweet.content, tweet.author, TweetReplyTo);
 
-    if (!TweetReplyTo) {
-      TweetRepository.addTweet(tweet)
-      newTweet.author.tweets.push(tweet)
-      return newTweet
-    }
+class TweetController {
+  public create(content: Tweet, authorId: User) {
 
-    {
-      const createReply = (tweet: Tweet, TweetReplyTo?: Tweet) => {
-        let newTweet = new Tweet(tweet.content, tweet.author, TweetReplyTo);
-        const allTweetsUser = tweet.author.tweets.map(item => item)
-        if (allTweetsUser.find(item => item.getId()) === tweets.find(item => item.getId())) {
-
-          let TweetReplyTo = newTweet
-
-          if (newTweet.tipo === TweetType.reply) {
-            const tweetIdReply = newTweet.getId()
-            const tweetToReply = TweetRepository.getId(tweetIdReply);
-            TweetRepository.addReply(tweetToReply)
-            TweetRepository.addTweet(tweetToReply)
-            return console.log(`${newTweet.author.username} respondeu ao tweet de ${TweetReplyTo.author.username}`)
-          }
-        }
-        else {
-          return
-        }
-      }
-      createReply(newTweet)
-    }
+    const findUser = users.find(item => item.id === authorId.id)
+    const newTweet = new Tweet(content.content, authorId)
+    newTweet.tipo
+    TweetRepository.addTweet(newTweet)
+    findUser?.tweets.push(newTweet)
+    tweets.push(newTweet)
+    return newTweet
   }
 
-  // public liker(findAuthorLiked: Tweet) {
-  //   const tweetliked = new Tweet(findAuthorLiked.content,findAuthorLiked.author)
-  //   tweetliked.addTweetliked(tweetliked)
-  // }
 
-  public listAllTweets() {
-    const info = tweets.map(item => item.displayTweet())
-    return info
+  public feedTweet(tweet: string, user: Follow) {
+
+    // const findUser = users!.find(item => item.id === user.id)
+
+    const findTweet = tweets.find(item => item.content === tweet)
+    const findReply = replies.find(item => item.authorReply.id === user.id)
+
+
+    if (findTweet) {
+      if (findTweet?.likes.length === 0) {
+        console.log(`@${user.username} : ${findTweet?.content}`)
+        console.log(`[ ${findTweet.likes.length} curtidas ]`)
+        console.log("=========================================================================")
+      }
+
+      if (findTweet!.likes.length === 1) {
+        console.log(`@${findTweet?.author.username} : ${findTweet?.content}`)
+        console.log(`[ @${findTweet!.likes.map(item => item.authorlike.username)} curtiu isso ]`)
+        console.log("=========================================================================")
+
+      }
+
+      if (findTweet!.likes.length >= 2) {
+        console.log(`@${findTweet?.author.username} : ${findTweet?.content} `)
+        console.log(`[ @${findTweet!.likes[0].authorlike.username} e mais ${findTweet?.likes.length - 1} curtiram ]`)
+        console.log("=========================================================================")
+      }
+
+      if (findTweet) {
+        if (findTweet.replies.length) {
+          console.log(`@${findTweet.author.username} : ${findTweet.content}`)
+          console.log(`> @${findTweet.replies.find(item => item.authorReply.username)}: ${findTweet.replies.find(item => item.contentTweetReply)}\n likes: ${findTweet.replies.find(item => item.likes.length)}`)
+          console.log("=========================================================================")
+        }
+      }
+    }
+
+
+    if (findReply) {
+      if (findReply.likes.length === 0) {
+        console.log(`@${findReply.authorTweet.username} : ${findReply!.contentTweetReply}`)
+        console.log(`[ ${findReply.likes.length} curtidas ]`)
+        console.log("=========================================================================")
+      }
+
+      else if (findReply.likes.length === 1) {
+        console.log(`@${findReply.authorTweet.username} : ${findReply!.contentTweetReply}`)
+        console.log(`[ @${findReply!.likes.map(item => item.authorlike.username)} curtiu isso ]`)
+        console.log("=========================================================================")
+      }
+
+      else if (findReply.likes.length >= 2) {
+        console.log(`@${findReply.authorTweet.username} : ${findReply!.contentTweetReply} `)
+        console.log(`[ @${findReply!.likes[0].authorlike.username} e outros ${findReply!.likes.length - 1} curtiram ]`)
+        console.log("=========================================================================")
+      }
+    }
+
+    if (findReply) {
+      for (const reply of replies) {
+        const authorTweet = reply.authorReply.username
+        const contentTweet = reply.replyTo
+        const authorReply = reply.authorTweet.username
+        const content = reply.contentTweetReply
+        const likes = reply.likes.length
+        console.log(`@${authorTweet} : ${contentTweet}`)
+        console.log(`> @${authorReply}: ${content}\n [ ${likes} likes ] \n [ ${replies.length - 1} replies ]`)
+        console.log("=========================================================================")
+      }
+    }
   }
 }
 
 
 
+export default new TweetController()
 
-  // export class TweetController {
-  //   // tweet sem id = não existe. Se não existe é normal se não é reply
-  //   public create(tweet: Tweet) {
-
-  //     const newTweet = new Tweet(tweet.detailTweet().id,tweet.detailTweet().author,tweet.detailTweet().addressee);
-  //     const info = {name: newTweet.detailTweet().author.name,username: newTweet.detailTweet().author.username,email: newTweet.detailTweet().author.email};
-
-  //       if (userSearchTweet?.detailFollow().email === info.email) {
-  //        newTweet.tipo = TweetType.reply
-  //        tweet.incrementReply()
-  //         return info;
-  //       }
-
-  //       if (newTweet.tipo === TweetType.reply) {
-  //         const tweetIdToReply = newTweet.getId();
-  //         const tweetToReply = TweetRepository.get(tweetIdToReply);
-  //         tweet.incrementReply()
-  //         if (!tweetToReply) {
-  //           return console.log("Tweet para responder não encontrado.");
-  //         }
-
-  //         newTweet.tipo = TweetType.reply;
-  //         tweet.incrementReply
-  //         TweetRepository.addTweet(newTweet);
-  //         return console.log(`@${tweet.detailTweet().author.username} respondeu ao tweet: ${info}`);
-  //       } else {
-  //         TweetRepository.addTweet(newTweet);
-  //         newTweet.tipo = TweetType.normal
-  //         console.log(`@${tweet.detailTweet().author.username}criou o tweet: ${newTweet.detailTweet()}`
-  //         );
-  //       }
-  //   }
-
-  // }
 
