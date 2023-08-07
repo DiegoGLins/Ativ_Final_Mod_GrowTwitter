@@ -6,7 +6,6 @@ import { User } from "../models/UserModel";
 import { tweets } from "../database/tweets";
 import { replies } from "../database/replies";
 import { Follow } from "../Types/FollowUserType";
-import { Reply } from "../models/ReplyModel";
 
 
 class TweetController {
