@@ -171,3 +171,7 @@ console.log("-------------------------------------------------------------------
 
 console.log(`==================== Feed do usuario ${user1.name} ===============================`)
 TweetController.feedTweet("Aprendi nessa plataforma com a Growdev", user1)
+
+
+const feedUser2 = user2.showFeed()
+console.log(feedUser2)
