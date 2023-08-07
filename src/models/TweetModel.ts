@@ -4,6 +4,7 @@ import { Liker } from "./LikerModel";
 import { Reply } from "./ReplyModel";
 import { User } from "./UserModel";
 
+
 class Tweet {
   private id: string;
   public likes: Liker[];
@@ -37,13 +38,14 @@ class Tweet {
     }
   }
 
+
   detailTweet() {
   
     return {
       author: this.author.username,
       content: this.content,
       likes: this.likes.length,
-      reply: this.replies
+      reply: this.replies.length
     }
   }
 }
