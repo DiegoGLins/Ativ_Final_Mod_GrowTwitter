@@ -89,9 +89,10 @@ export class User implements Follow {
     }
   }
 
+  //----------- Feed ---------------//
 
   public showFeed() {
-    const listTweets = tweets.filter(item => item.author.id === this.id)
+    const listTweets = tweets.filter(item => item.detailTweet())
     return listTweets
   }
 
