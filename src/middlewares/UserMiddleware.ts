@@ -8,9 +8,9 @@ function validateUser(user: User): boolean {
     const username = UserRepository.getByUserName(user.username)
 
     if (!name || !email || !username) {
-        return false
+        return true
     }
-    return true
+    return false
 }
 
 export default validateUser
