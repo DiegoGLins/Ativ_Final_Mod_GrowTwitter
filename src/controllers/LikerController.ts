@@ -6,20 +6,23 @@ import { Liker } from "../models/LikerModel"
 
 class LikerController {
   //---------- Curtindo ----------//
+
   public addLike(authorlike: Follow, tweetliked: string, authorTweet: Follow) {
     users.find(item => item.id === authorTweet.id)
     const existTweet = tweets.find(item => item.content === tweetliked)
 
+    let emoji = '\uD83D\uDC4D'
+
     if (existTweet) {
-      const newLike = new Liker(tweetliked, authorlike)
+      const newLike = new Liker(tweetliked + " " + emoji, authorlike)
       existTweet.includeLike(newLike)
       return newLike
     }
 
-    const existReply = replies.find(item=>item.contentTweetReply === tweetliked)
+    const existReply = replies.find(item => item.contentTweetReply === tweetliked)
 
     if (existReply) {
-      const newReplyLike = new Liker(tweetliked, authorlike)
+      const newReplyLike = new Liker(tweetliked + " " + emoji, authorlike)
       existReply.includeLikeReply(newReplyLike)
       return newReplyLike
     }
