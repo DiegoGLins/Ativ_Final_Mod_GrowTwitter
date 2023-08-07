@@ -1,15 +1,15 @@
 import { v4 as createUuid } from "uuid";
 import { Follow } from "../Types/FollowUserType";
-import { tweets } from "../database/tweets";
-import TweetRepository from "../repositories/Tweet.repository";
 import Tweet from "./TweetModel";
-import { Liker } from "./LikerModel";
+import { Reply } from "./ReplyModel";
+import { tweets } from "../database/tweets";
 
-export class User implements Follow{
+export class User implements Follow {
   private _id: string;
   public numberFollowing: number;
   public following: Follow[];
   public tweets: Tweet[]
+  public replie: Reply[]
 
   constructor(
     public name: string,
@@ -23,6 +23,7 @@ export class User implements Follow{
     this.following = [];
     this.numberFollowing = this.following.length;
     this.tweets = []
+    this.replie = []
   }
 
   //------ getters------
@@ -59,15 +60,17 @@ export class User implements Follow{
   // -------- Detalhe do seguidor ---------//
 
   public detailFollow() {
-    const listTweets = tweets.filter((tweet) => tweet.author.id === this.id)
+    const listTweets = tweets.filter((tweet) => tweet.getId() === this.id)
 
     return {
       id: this._id,
       name: this.name,
       username: this.username,
       email: this.email,
+      following: this.following,
       numberFollowing: this.numberFollowing,
-      tweets: listTweets,
+      tweets: [...listTweets],
+      replie: this.replie
     };
   }
 
@@ -80,28 +83,12 @@ export class User implements Follow{
 
   public unFollowing(user: Follow) {
     const index = this.following.findIndex((item) => item.id === user.id);
-    this.following.splice(index, 1);
-    return this.numberFollowing--;
-  }
-
-  //---------- Curtindo um tweet ----------//
-
-  // public addLike(tweet: Tweet) {
-  //   const tweetLiked = tweet.addTweetliked()
-  //   console.log(tweetLiked)
-  //   return tweetLiked
-  // }
-
-  //---------- Removendo a curtida ----------//
-
-  public removeLike(tweet: Tweet) {
-    const tweetUnlikeContent = tweet.content;
-    const tweetUnlike = tweet;
-    if (!tweetUnlike) {
-      return console.log("Tweet não encontrado");
+    if (index !== -1) {
+      this.following.splice(index, 1);
+      return this.numberFollowing--;
     }
-    return tweetUnlikeContent
   }
+
 
   //----------- Seguindo -----------//
 
@@ -124,7 +111,7 @@ export class User implements Follow{
 
     this.addFollowing(user);
     console.log(`@${this.username} começou seguir @${user.username}`);
-    this.detailFollow();
+    this.detailFollow()
   }
 
   public unFollowingUser(user: Follow) {
@@ -149,11 +136,5 @@ export class User implements Follow{
     return this.detailFollow();
   }
 
-  //--- Feed de tweets do usuario ---//
-
-  public displayFeed(tweets: Tweet) {
-    const feed = TweetRepository.list(tweets)
-    return feed;
-  }
 
 }
