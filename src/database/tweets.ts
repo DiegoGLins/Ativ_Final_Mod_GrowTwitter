@@ -1,3 +1,4 @@
-import { Tweet } from "../models/TweetModel";
+import Tweet from "../models/TweetModel";
+
 
 export const tweets: Tweet[] = []
