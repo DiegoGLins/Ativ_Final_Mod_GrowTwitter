@@ -1,3 +1,5 @@
+
+import { Reply } from "../models/ReplyModel";
 import Tweet from "../models/TweetModel";
 
 
@@ -8,4 +10,5 @@ export interface Follow {
     email: string;
     numberFollowing: number;
     tweets: Tweet[]
+    replie: Reply[]
   }
