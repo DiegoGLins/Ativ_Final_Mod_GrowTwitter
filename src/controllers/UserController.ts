@@ -1,4 +1,5 @@
 
+
 import { users } from "../database/users";
 import validateUser from "../middlewares/UserMiddleware";
 import { User } from "../models/UserModel";
@@ -7,8 +8,8 @@ class UserController {
   public registerUser(user: User) {
     const validate = validateUser(user)
     if (!validate) {
-      console.log("Email ou username já cadastrado");
-      return
+      console.log("Dados inválidos");
+      return false
     }
     {
       const newUser = new User(user.name, user.username, user.email, user.password)
@@ -19,8 +20,10 @@ class UserController {
   }
   public listUsers() {
     const allusers = users.map(item => item.detailFollow())
-    return allusers 
+    return allusers
   }
+
+
 }
 
 export default new UserController();
