@@ -14,12 +14,4 @@ export class Liker {
         this.like = '\uD83D\uDC4D'
     }
 
-
-    public nameAuthorLike() {
-        const name = users.find(item => item.detailFollow() === this.authorlike)
-
-        return { name: name?.detailFollow().username}
-    }
-
-    
 }
